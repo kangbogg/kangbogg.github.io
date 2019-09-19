@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: true,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="本文环境我使用的环境：  Windows10专业版 nodejs @ 10.16.3 npm @ 6.9.0 git @ 2.22.0 hexo @ 3.9.0 next  @ 7.4.0 valine @ 1.3.10">
+<meta name="keywords" content="Hexo,Next,优化,评论">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo优化之添加评论功能">
+<meta property="og:url" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/index.html">
+<meta property="og:site_name" content="康小博">
+<meta property="og:description" content="本文环境我使用的环境：  Windows10专业版 nodejs @ 10.16.3 npm @ 6.9.0 git @ 2.22.0 hexo @ 3.9.0 next  @ 7.4.0 valine @ 1.3.10">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_01.png">
+<meta property="og:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_02.png">
+<meta property="og:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_03.png">
+<meta property="og:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_04.png">
+<meta property="og:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_05.png">
+<meta property="og:updated_time" content="2019-09-12T03:05:02.268Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo优化之添加评论功能">
+<meta name="twitter:description" content="本文环境我使用的环境：  Windows10专业版 nodejs @ 10.16.3 npm @ 6.9.0 git @ 2.22.0 hexo @ 3.9.0 next  @ 7.4.0 valine @ 1.3.10">
+<meta name="twitter:image" content="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/image_01.png">
+  <link rel="canonical" href="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Hexo优化之添加评论功能 | 康小博</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">康小博</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">康小博的个人博客</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">16</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">3</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">9</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://kangxiaobo.com/2019/09/11/Hexo优化之添加评论功能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="康小博">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kangxiaobo.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="康小博">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">Hexo优化之添加评论功能
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-11 21:00:27" itemprop="dateCreated datePublished" datetime="2019-09-11T21:00:27+08:00">2019-09-11</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-09-12 11:05:02" itemprop="dateModified" datetime="2019-09-12T11:05:02+08:00">2019-09-12</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/博客相关/" itemprop="url" rel="index"><span itemprop="name">博客相关</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2019/09/11/Hexo优化之添加评论功能/" class="post-meta-item leancloud_visitors" data-flag-title="Hexo优化之添加评论功能" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+			  <span>℃</span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/09/11/Hexo优化之添加评论功能/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2019/09/11/Hexo优化之添加评论功能/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span>1.1k</span>
+            </span>
+          
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span>2 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="本文环境"><a href="#本文环境" class="headerlink" title="本文环境"></a>本文环境</h1><p>我使用的环境：</p>
+<ul>
+<li>Windows10专业版</li>
+<li>nodejs @ 10.16.3</li>
+<li>npm @ 6.9.0</li>
+<li>git @ 2.22.0</li>
+<li>hexo @ 3.9.0</li>
+<li>next  @ 7.4.0</li>
+<li>valine @ 1.3.10</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="评论系统"><a href="#评论系统" class="headerlink" title="评论系统"></a>评论系统</h1><p>Next主题中为我们提供了以下几种评论系统</p>
+<ul>
+<li><a href="[https://disqus.com">Disqus</a></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cubGl2ZXJlLmNvbS8=" title="https://www.livere.com/">LiveRe<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NldHRpbmdzL2FwcGxpY2F0aW9ucy9uZXc=" title="https://github.com/settings/applications/new">Gitalk<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9sZWFuY2xvdWQuY24vZGFzaGJvYXJkL2xvZ2luLmh0bWwjL3NpZ25pbg==" title="https://leancloud.cn/dashboard/login.html#/signin">Valine<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9jaGFuZ3lhbi5rdWFpemhhbi5jb20v" title="https://changyan.kuaizhan.com/">Changyan<i class="fa fa-external-link"></i></span></li>
+</ul>
+<p>在这里我选择了 <code>Valine</code></p>
+<h1 id="注册账号"><a href="#注册账号" class="headerlink" title="注册账号"></a>注册账号</h1><ol>
+<li><p>直接去官网 <span class="exturl" data-url="aHR0cHM6Ly9sZWFuY2xvdWQuY24vZGFzaGJvYXJkL2xvZ2luLmh0bWwjL3NpZ25pbg==" title="https://leancloud.cn/dashboard/login.html#/signin">https://leancloud.cn/dashboard/login.html#/signin<i class="fa fa-external-link"></i></span> 创建一个账号 </p>
+</li>
+<li><p>创建一个应用</p>
+</li>
+</ol>
+   <img src="/2019/09/11/Hexo优化之添加评论功能/image_01.png" title="创建Valine应用">
+
+
+
+<ol start="3">
+<li>选择免费的开发版即可</li>
+</ol>
+   <img src="/2019/09/11/Hexo优化之添加评论功能/image_02.png" title="选择Valine版本">
+
+
+
+<ol start="4">
+<li>打开刚刚创建的应用</li>
+</ol>
+   <img src="/2019/09/11/Hexo优化之添加评论功能/image_03.png" title="打开Valine应用">
+
+
+
+<ol start="5">
+<li>找到 <code>设置</code>  <code>App Key</code> 拿到我们的 <code>App ID</code> 和 <code>App Key</code> 等会要用</li>
+</ol>
+   <img src="/2019/09/11/Hexo优化之添加评论功能/image_04.png" title="获得App ID 和App Key">
+
+
+
+
+
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><p>获得了 <code>App ID</code> 和 <code>App Key</code> 之后 我们需要更一下 <code>Next</code> 的配置文件 <code>themes/next/_config.yml</code></p>
+<ol>
+<li><p>搜索 <code>valine</code> 根据自己的需要更改设置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">valine:</span></span><br><span class="line">  <span class="comment"># 是否开启 valine</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span> </span><br><span class="line">  <span class="comment"># 注册得到的 App Id</span></span><br><span class="line"><span class="attr">  appid:</span> <span class="string">Your</span> <span class="string">Id</span></span><br><span class="line">  <span class="comment"># 注册得到的 App Key</span></span><br><span class="line"><span class="attr">  appkey:</span> <span class="string">Your</span> <span class="string">Key</span></span><br><span class="line">  <span class="comment"># 是否开启邮箱通知 （需要的应用里配置自己的邮箱等等  https://github.com/xCss/Valine/wiki）</span></span><br><span class="line"><span class="attr">  notify:</span> <span class="literal">false</span> </span><br><span class="line">  <span class="comment"># 评论验证码 （开启邮箱通知后会默认开启验证码）</span></span><br><span class="line"><span class="attr">  verify:</span> <span class="literal">false</span> </span><br><span class="line">  <span class="comment"># 评论框占位文字</span></span><br><span class="line"><span class="attr">  placeholder:</span> <span class="string">我有一个大胆的想法</span> </span><br><span class="line">  <span class="comment"># 风格</span></span><br><span class="line"><span class="attr">  avatar:</span> <span class="string">mm</span> </span><br><span class="line">  <span class="comment"># 用户信息</span></span><br><span class="line"><span class="attr">  guest_info:</span> <span class="string">nick,mail,link</span> </span><br><span class="line">  <span class="comment"># 每一页显示评论数量</span></span><br><span class="line"><span class="attr">  pageSize:</span> <span class="number">10</span> </span><br><span class="line">  <span class="comment"># 语言 支持: en zh-cn</span></span><br><span class="line"><span class="attr">  language:</span> </span><br><span class="line">  <span class="comment"># 文章阅读数量统计</span></span><br><span class="line"><span class="attr">  visitor:</span> <span class="literal">true</span> </span><br><span class="line">  <span class="comment"># 是否将评论数量只显示在博客页面中</span></span><br><span class="line"><span class="attr">  comment_count:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="2">
+<li><p>然后搜索 <code>leancloud_visitors</code> 填写自己的 <code>App Id</code> 和 <code>App Key</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">leancloud_visitors:</span></span><br><span class="line">  <span class="comment"># 是否开启阅读统计</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># 刚刚注册得到的 App Id</span></span><br><span class="line"><span class="attr">  app_id:</span> <span class="string">Your</span> <span class="string">Id</span></span><br><span class="line">  <span class="comment"># 刚刚注册得到的 App Key</span></span><br><span class="line"><span class="attr">  app_key:</span> <span class="string">Your</span> <span class="string">Key</span></span><br><span class="line"><span class="attr">  security:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  betterPerformance:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+</li>
+</ol>
+<h1 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h1><img src="/2019/09/11/Hexo优化之添加评论功能/image_05.png" title="效果图">
+    </div>
+
+    
+    
+    
+        
+      
+	  
+	  <div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:44px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+  
+</div>
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Hexo/" rel="tag"><i class="fa fa-tag"></i> Hexo</a>
+            
+              <a href="/tags/Next/" rel="tag"><i class="fa fa-tag"></i> Next</a>
+            
+              <a href="/tags/优化/" rel="tag"><i class="fa fa-tag"></i> 优化</a>
+            
+              <a href="/tags/评论/" rel="tag"><i class="fa fa-tag"></i> 评论</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/11/Hexo优化之显示分类和标签/" rel="next" title="Hexo优化之显示分类和标签">
+                  <i class="fa fa-chevron-left"></i> Hexo优化之显示分类和标签
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/15/Android-Material-Design之TextInputLayout/" rel="prev" title="Android Material Design之TextInputLayout">
+                  Android Material Design之TextInputLayout <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#本文环境"><span class="nav-number">1.</span> <span class="nav-text">本文环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#评论系统"><span class="nav-number">2.</span> <span class="nav-text">评论系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注册账号"><span class="nav-number">3.</span> <span class="nav-text">注册账号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置文件"><span class="nav-number">4.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#效果图"><span class="nav-number">5.</span> <span class="nav-text">效果图</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/kangxiaobo.png"
+      alt="康小博">
+  <p class="site-author-name" itemprop="name">康小博</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">康小博</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">15k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'u1zexVKf0oPdl4gWx5EEVK9G-gzGzoHsz',
+    appKey: 'zepfFRUU0Cy6lkayBY6AanHa',
+    placeholder: '我有一个大胆的想法',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+  
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-wanko"}});</script></body>
+</html>
